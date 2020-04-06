@@ -22,7 +22,6 @@ def cmdfunc(**par_dict):
 data_dir = ""
 python_path = ""
 script_path = ""
-date_now ="20200406"
 run_log_path = ""
 out_path = ""
 
