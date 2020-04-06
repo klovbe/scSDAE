@@ -16,25 +16,15 @@ def cmdfunc(**par_dict):
         **par_dict
     )
     print("running {}...".format(cmd))
-    # ret = subprocess.check_call(cmd, shell=True, cwd="/home/xysmlx/python_project/SSDAE")
     os.system(cmd)
-    # print(ret)
 
-
-# done_model_names = ["baron", "biase", "camp", "darmanis","deng", "goolam", "klein", "kolod","macosko", "patel",
-#            "pollen", "shekhar", "treutlein", "usoskin", "yan", 'zeisel']
-# done_model_names = ["zeiselercc","ziegenhain","melanoma","stoeckiusraw","melanomastupid"]
-# done_model_names = ["zeisel", "ziegenhain"]
-# , "CELseq2","DropSeq","MARSseq","SmartSeq","SmartSeq2"
-done_model_names = []
-# done_model_names = [ "camp", "chen", "havrin", "kolod", "macosko", "manno", "treutlein", "zeisel"]
-data_dir = "/data/wlchi/data/filter_data"
-python_path = "/data/wlchi/anaconda3/envs/tf-gpu/bin/python"
-script_path = "/data/wlchi/python_project/SSDAE/pure_ae_new.py"
-done_path = "/data/wlchi/python_project/SSDAE/done_train.txt"
-date_now ="gene_scale"
-run_log_path = "./pure_ae_new/{}/run_logs".format(date_now)
-out_path = "./pure_ae_new/{}/out".format(date_now)
+ 
+data_dir = ""
+python_path = ""
+script_path = ""
+date_now ="20200406"
+run_log_path = ""
+out_path = ""
 
 
 
@@ -42,14 +32,11 @@ name_list = os.listdir(data_dir)
 # name_list = ["zeisel_count.csv"]
 name_list_new = []
 for file in name_list:
-    # if "usoskindown_logcount.csv" in file:
-    if "hrvatin_count.csv" in file:
+    if "csv" in file:
         name_list_new.append(file)
 name_list = name_list_new
 print(len(name_list_new))
-# gamma_list = [0.05, 0.2, 0.5, 2]
-# gamma_list = [0, 0.01, 0.05, 0.1, 0.2, 0.5, 1, 2]
-# gamma_list = [ 0.5, 1, 2]
+
 gpu_set = "0"
 gamma_list = [1]
 start_time = time.time()
@@ -68,9 +55,6 @@ for i, file in enumerate(name_list):
             os.makedirs(run_log_path_name)
         if os.path.exists(out_dir) is False:
             os.makedirs(out_dir)
-        if name in done_model_names:
-          print("{} has been trained before".format(name))
-          continue
         par_dict = {
         "python": python_path,
         "script_path": script_path,
