@@ -32,7 +32,7 @@ def load_newdata(train_datapath, metric='pearson', data_type='count', trans=True
     return df.values
 
 
-def batch_generator(X, batch_size, shuffle, beta=1.0, gamma=1.0):
+def batch_generator(X, batch_size, shuffle, beta=1.0, alpha=1.0):
     sample_index = np.arange(X.shape[0])
     number_of_batches = X.shape[0] // batch_size
     counter = 0
@@ -54,7 +54,7 @@ def batch_generator(X, batch_size, shuffle, beta=1.0, gamma=1.0):
         deg = np.ones([X_batch.shape[0], 1]) * deg
         B[X_batch != 0] = beta
         B[X_batch == 0] = 0.0
-        B_0[X_batch == 0] = gamma
+        B_0[X_batch == 0] = alpha
         B_0[X_batch != 0] = 0.0
         B_0 = np.append(B_0, deg_0, axis=1)
         B = np.append(B, deg, axis=1)
@@ -110,7 +110,7 @@ class Autoencoder():
                 x_diff2 = Subtract()([x, y])
                 ae = Model(inputs=x, outputs=[x_diff1, x_diff2])
                 ae.compile(loss=[weighted_mse, weighted_mae], optimizer='adam')
-                ae.fit_generator(batch_generator(train_set, batch_size=batch_size, shuffle=True, beta=1.0, gamma=gamma)
+                ae.fit_generator(batch_generator(train_set, batch_size=batch_size, shuffle=True, beta=1.0, alpha=alpha)
                                         , steps_per_epoch=steps_per_epoch, nb_epoch=epochs_pretrain)
                 ae.summary()
                 # Store trainined weight
@@ -198,7 +198,7 @@ class Autoencoder():
         checkpoint = ModelCheckpoint(filepath=outdir + 'best.h5', monitor='loss', save_best_only=True,
                                      save_weights_only=True)
         self.history = self.autoencoders.fit_generator(batch_generator(train_set, batch_size=batch_size
-                                                                       , shuffle=True, beta=1.0, gamma=gamma),
+                                                                       , shuffle=True, beta=1.0, alpha=alpha),
                                                        steps_per_epoch=steps_per_epoch,
                                                        epochs=epochs_ae, callbacks=[checkpoint])
         # self.autoencoders.save_weights('{}/autoencoder_pure.h5'.format(outdir))
@@ -248,7 +248,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', default=256, type=int)
     parser.add_argument('--n_iters_ae', default=2000, type=int)
     parser.add_argument('--n_iters_pretrain', default=1000, type=int)
-    parser.add_argument('--gamma', default=1.0, type=float)
+    parser.add_argument('--alpha', default=1.0, type=float)
     parser.add_argument('--beta', default=1.0, type=float)
     parser.add_argument('--dr_rate', default=0.2, type=float)
     parser.add_argument('--nu1', default=0.0, type=float)
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     nu1 = args.nu1
     nu2 = args.nu2
     outdir = args.outDir
-    gamma = args.gamma
+    alpha = args.alpha
     gene_scale = args.gene_scale
 
     train_set = load_newdata(train_datapath, data_type=args.data_type)
